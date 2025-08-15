@@ -35,8 +35,7 @@ age -d -i ~/.age/qage-key secret.age
 
 ## Documentation
 
-- **[CLI Reference](docs/)** - Complete command documentation
-- **[Go Package Docs](https://pkg.go.dev/github.com/zlobste/qage/pkg/qage)**
+- **[CLI Reference](docs/cli.md)** - Complete command documentation
 
 Generate CLI docs locally:
 ```bash
