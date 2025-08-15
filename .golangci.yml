@@ -1,0 +1,91 @@
+version: 2
+
+run:
+  timeout: 5m
+  go: "1.24"
+
+linters:
+  enable:
+    - errcheck
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+    - misspell
+    - gocritic
+    - bodyclose
+    - unconvert
+    - unparam
+    - copyloopvar
+    - predeclared
+    - goconst
+    - gocyclo
+    - funlen
+    - lll
+    - nestif
+    - gocognit
+    - prealloc
+    - whitespace
+  disable:
+    - gosec  # Too many false positives for CLI tool
+
+linters-settings:
+  errcheck:
+    check-type-assertions: true
+    check-blank: true
+  
+  govet:
+    disable:
+      - fieldalignment  # Minor optimization, not critical
+      - shadow  # Using other shadow detection
+  
+  gocyclo:
+    min-complexity: 15
+  
+  funlen:
+    lines: 100
+    statements: 50
+  
+  lll:
+    line-length: 120
+  
+  nestif:
+    min-complexity: 4
+  
+  gocognit:
+    min-complexity: 20
+
+issues:
+  exclude-use-default: false
+  exclude-rules:
+    # Exclude certain linters from running on tests files
+    - path: _test\.go
+      linters:
+        - gocyclo
+        - errcheck
+        - dupl
+        - gosec
+        - funlen
+        - lll
+    
+    # Exclude known false positives
+    - text: "should not use dot imports"
+      linters:
+        - golint
+    
+    # Exclude error checks in main functions
+    - path: cmd/
+      text: "Error return value of.*is not checked"
+      linters:
+        - errcheck
+    
+    # Allow long lines in generated files
+    - path: docs/
+      linters:
+        - lll
+
+output:
+  formats:
+    colored-line-number:
+  print-issued-lines: true
+  print-linter-name: true

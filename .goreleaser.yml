@@ -1,0 +1,71 @@
+version: 2
+project_name: qage
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: qage
+    main: ./cmd/qage
+    binary: qage
+    env:
+      - CGO_ENABLED=0
+    ldflags:
+      - -s -w -X github.com/zlobste/qage/internal/version.Version={{.Version}} -X github.com/zlobste/qage/internal/version.Commit={{.Commit}} -X github.com/zlobste/qage/internal/version.BuildDate={{.Date}}
+    goos: [linux, darwin, windows]
+    goarch: [amd64, arm64]
+    mod_timestamp: '{{ .CommitTimestamp }}'
+    flags: [ -trimpath ]
+  - id: age-plugin-qage
+    main: ./cmd/age-plugin-qage
+    binary: age-plugin-qage
+    env: [ CGO_ENABLED=0 ]
+    ldflags:
+      - -s -w -X github.com/zlobste/qage/internal/version.Version={{.Version}} -X github.com/zlobste/qage/internal/version.Commit={{.Commit}} -X github.com/zlobste/qage/internal/version.BuildDate={{.Date}}
+    goos: [linux, darwin, windows]
+    goarch: [amd64, arm64]
+
+archives:
+  - id: archive
+    ids: [qage, age-plugin-qage]
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+    name_template: '{{ .ProjectName }}_{{ .Version }}_{{ if eq .Os "darwin" }}macOS{{ else }}{{ .Os }}{{ end }}_{{ .Arch }}'
+    files:
+      - LICENSE
+      - README.md
+    wrap_in_directory: true
+
+checksum:
+  name_template: 'checksums.txt'
+
+sboms:
+  - id: sbom-archives
+    artifacts: archive
+
+signs:
+  - artifacts: checksum
+    cmd: cosign
+    args:
+      - sign-blob
+      - '--output'
+      - '${signature}'
+      - '--yes'
+      - '${artifact}'
+    signature: '${artifact}.sig'
+    env:
+      - COSIGN_EXPERIMENTAL=1
+
+release:
+  draft: false
+  prerelease: auto
+  mode: replace
+
+changelog:
+  use: git
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
