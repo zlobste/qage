@@ -48,11 +48,6 @@ func init() {
 	rootCmd.AddCommand(docsCmd)
 }
 
-// GetRootCmd returns the root command for testing.
-func GetRootCmd() *cobra.Command {
-	return rootCmd
-}
-
 // NewRootCmd creates a fresh root command for testing.
 func NewRootCmd() *cobra.Command {
 	cmd := &cobra.Command{

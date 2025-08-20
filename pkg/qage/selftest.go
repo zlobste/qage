@@ -13,24 +13,25 @@ import (
 // Selftest runs internal validation tests.
 func Selftest() error {
 	// Test 1: Key generation and round-trip
-	if err := selftestKeygenRoundtrip(); err != nil {
+	if err := SelftestKeygenRoundtrip(); err != nil {
 		return fmt.Errorf("keygen roundtrip: %w", err)
 	}
 
 	// Test 2: Age integration
-	if err := selftestAgeIntegration(); err != nil {
+	if err := SelftestAgeIntegration(); err != nil {
 		return fmt.Errorf("age integration: %w", err)
 	}
 
 	// Test 3: String encoding/decoding
-	if err := selftestStringEncoding(); err != nil {
+	if err := SelftestStringEncoding(); err != nil {
 		return fmt.Errorf("string encoding: %w", err)
 	}
 
 	return nil
 }
 
-func selftestKeygenRoundtrip() error {
+// SelftestKeygenRoundtrip tests key generation and round-trip encoding.
+func SelftestKeygenRoundtrip() error {
 	// Generate identity
 	id, err := NewIdentity()
 	if err != nil {
@@ -84,7 +85,8 @@ func selftestKeygenRoundtrip() error {
 	return nil
 }
 
-func selftestAgeIntegration() error {
+// SelftestAgeIntegration tests age library integration.
+func SelftestAgeIntegration() error {
 	// Generate test data
 	plaintext := make([]byte, 1024)
 	if _, err := rand.Read(plaintext); err != nil {
@@ -130,7 +132,8 @@ func selftestAgeIntegration() error {
 	return nil
 }
 
-func selftestStringEncoding() error {
+// SelftestStringEncoding tests string encoding and file format.
+func SelftestStringEncoding() error {
 	// Test file format
 	id, err := NewIdentity()
 	if err != nil {
