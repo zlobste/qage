@@ -35,11 +35,12 @@ age -d -i ~/.age/qage-key secret.age
 
 ## Documentation
 
-- **[CLI Reference](docs/cli.md)** - Complete command documentation
+CLI command reference is auto-generated. See the markdown files in `docs/` (e.g. [`docs/qage.md`](docs/qage.md)) for the latest command help.
 
-Generate CLI docs locally:
+Generate / refresh locally:
 ```bash
-qage docs  # Creates markdown files in ./docs/
+qage docs  # Creates/updates markdown files in ./docs/
+ls docs/*.md
 ```
 
 ## Go Library
@@ -60,17 +61,35 @@ identities := []age.Identity{identity}
 
 ## Security
 
-qage combines two cryptographic systems:
-- **X25519** (classical security) 
-- **ML-KEM-768** (post-quantum security)
+qage combines two cryptographic components in a hybrid KEM:
 
-An attacker must break *both* to compromise your data.
+| Component      | Purpose | Status |
+| -------------- | ------- | ------ |
+| X25519         | Classical ECDH security | Widely deployed |
+| ML-KEM-768     | Post-quantum KEM (Kyber level 3) | NIST PQC selection |
+
+The shared secret is derived from *both* encapsulations; an attacker must successfully break both to recover the file key. This follows the standard hybrid rationale: security degrades only if **both** primitives fail.
+
+⚠️ Disclaimer: While ML-KEM (Kyber) is selected by NIST, real-world PQ threats and potential side-channel / implementation bugs can exist. Treat this as an additional defense layer, not a silver bullet. Review the code and perform your own audits before protecting extremely sensitive data.
+
+## Plugin Usage (age integration)
+
+The optional `age-plugin-qage` binary allows the standard `age` tool to encrypt/decrypt using qage recipients transparently.
+
+Build it:
+```bash
+go build -o age-plugin-qage ./cmd/age-plugin-qage
+mv age-plugin-qage $(go env GOPATH)/bin/  # ensure it's on PATH
+```
+
+Then `age` will automatically invoke it when encountering `qage` recipients.
 
 ## Testing
 
 ```bash
-go test ./...      # Run all tests
-qage selftest      # Built-in validation  
+go test ./...          # Run all tests
+go test -race ./...    # Race detector
+qage selftest          # Built-in validation
 ```
 
 ## Contributing

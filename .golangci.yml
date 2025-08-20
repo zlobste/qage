@@ -12,5 +12,3 @@ linters:
     - unused
     - errcheck
     - misspell
-
-# Simplified for v2 schema: removed deprecated disable-all, issues.exclude-use-default, and linters-settings
