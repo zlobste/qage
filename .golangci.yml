@@ -1,9 +1,10 @@
+version: "2"
+
 run:
   timeout: 3m
   tests: true
 
 linters:
-  disable-all: true
   enable:
     - govet
     - staticcheck
@@ -12,9 +13,4 @@ linters:
     - errcheck
     - misspell
 
-linters-settings:
-  misspell:
-    locale: US
-
-issues:
-  exclude-use-default: false
+# Simplified for v2 schema: removed deprecated disable-all, issues.exclude-use-default, and linters-settings
